@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33829.357
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageAuthApi", "ImageAuthApi\ImageAuthApi.csproj", "{498609A0-8C5D-4486-A6EC-1F4F7D2B0CFE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{498609A0-8C5D-4486-A6EC-1F4F7D2B0CFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{498609A0-8C5D-4486-A6EC-1F4F7D2B0CFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{498609A0-8C5D-4486-A6EC-1F4F7D2B0CFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{498609A0-8C5D-4486-A6EC-1F4F7D2B0CFE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D639D296-FD28-4C07-A6D0-FFB1CF4E64CD}
+	EndGlobalSection
+EndGlobal

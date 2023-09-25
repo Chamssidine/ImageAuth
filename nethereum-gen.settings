@@ -1,0 +1,7 @@
+{
+    "projectName": "ImageAuthApi",
+    "namespace": "ImageAuthApi.Contracts",
+    "lang": 0,
+    "autoCodeGen": true,
+    "projectPath": "../ImageAuthApi"
+}

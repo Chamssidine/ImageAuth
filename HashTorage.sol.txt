@@ -1,0 +1,48 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract HashStorage {
+    mapping(string => bool) private hashExists;
+    string[] private hashData;
+    uint256[] private  dateOfSaveList;
+    uint256 dateSave = 0;
+    
+    function compare(string memory hash) public view returns (bool) {
+
+        uint256 length =  getHashStorageLength();
+        uint256 i = 0;
+        bool isFound = false;
+        while(i <= length) {
+            isFound = keccak256(abi.encodePacked((hash))) == keccak256(abi.encodePacked((hashData[i])));
+            if(isFound){
+                break ;
+            }
+            i++;
+        }
+        return(isFound);
+    }
+
+    function store(string memory _hash) public  {
+        hashData.push(_hash);
+        dateOfSaveList.push(block.timestamp);
+    }
+     
+
+    function getHashData() external view returns (uint256 time, string memory hash) {
+        require(hashData.length > 0, "No data available");
+        return (dateOfSaveList[0], hashData[0]);
+    }
+
+    function getHashStorageLength() public view returns (uint256) {
+        return hashData.length;
+    }
+    function checkIfExist(string memory _hash) external {
+        require(!hashExists[_hash], "Hash already exists");
+        hashExists[_hash] = true;
+    }
+
+    function getHashDataByIndex(uint256 index) external view returns (string memory hash) {
+        require(index < hashData.length, "Index out of bounds");
+        return hashData[index];
+    }
+}

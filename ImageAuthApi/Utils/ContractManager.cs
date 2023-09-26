@@ -19,14 +19,17 @@ public class ContractManager
     private bool _isContractDeployed = false;
     private int _IdCounter = 0;
     public HashData HashData;
-    public void Init()
+    public OperationResult Init(string privateKey)
     {
-
+        if(privateKey == null)
+        {
+            return new OperationResult("Failed to deploy contyract: privateKey could not be null",false);
+        }
         //_privateKey = "0xb5b1870957d373ef0eeffecc6e4812c0fd08f554b37b233526acc331bf1544f7";
         //_account = new Nethereum.Web3.Accounts.Account(_privateKey);
         //_web3 = new Web3(_account, "https://localhost:8845");
         //_privateKey = "0xb5b1870957d373ef0eeffecc6e4812c0fd08f554b37b233526acc331bf1544f7";
-        _privateKey = "bb9bac2ada6a57d732dc6e877ccf683a5765f7c9786f888aabb00ceceb94c66f";
+        _privateKey = privateKey;
         _account = new Nethereum.Web3.Accounts.Account(_privateKey);
        // _web3 = new Web3(_account, "http://192.168.88.61:8545");
         _web3 = new Web3(_account, "https://ethereum-sepolia.blockpi.network/v1/rpc/public");
@@ -39,12 +42,17 @@ public class ContractManager
         {
             _isContractInitialized = false;
         }
+        return new OperationResult("succes", true);
     }
-    public async Task<OperationResult?> Deploy()
+    public async Task<OperationResult?> Deploy(string privateKey)
     {
         OperationResult response = new();
 
-        Init();
+        var initResult = Init(privateKey);
+        if(!initResult.IsSuccess)
+        {
+            return initResult;
+        }
         if (_isContractDeployed)
         {
             response.Message =  $"Contract already deployed at address:{_hashStorageService.ContractHandler.ContractAddress}";
@@ -73,47 +81,36 @@ public class ContractManager
     {
         OperationResult response = new();
 
-        if(_isContractInitialized)
+        if (!_isContractInitialized)
         {
-            bool hashExist;
-            try
-            {
-                hashExist = await CheckIfExists(data);
-            } catch (Exception ex)
-            {
-                response.Message = $"an error occured:{ex.Message}";
-                response.IsSuccess = false;
-                hashExist = false;
-            }
-            if(!hashExist)
-            {
-                try
-                {
-                     var transactionHash = await _hashStorageService.StoreRequestAndWaitForReceiptAsync(data);
-                     response.Message = $"{transactionHash.TransactionHash}";
-                    response.IsSuccess = true;
-
-                }
-                catch(Exception e)
-                {
-                    response.Message = $"there was an error {e.Message}";
-                    response.IsSuccess = false;
-                }
-            }
-            else
-            {
-                response.Message = "hash already Exists no need to re-save it!";
-                response.IsSuccess = false;
-            }
-           
+            response.Message = "Failed to send data, try to deploy a contract first.";
+            response.IsSuccess = false;
+            return response;
         }
-        else
+
+        try
         {
-            response.Message = "failed to send data, try to deploy a contract first.";
+            if (await CheckIfExists(data))
+            {
+                response.Message = "Hash already exists, no need to re-save it!";
+                response.IsSuccess = false;
+                return response;
+            }
+
+            var transactionHash = await _hashStorageService.StoreRequestAndWaitForReceiptAsync(data);
+            response.Message = $"data sent successfuly. TransactionHash:{transactionHash.TransactionHash}";
+            response.IsSuccess = true;
+        }
+        catch (Exception ex)
+        {
+            response.Message = $"An error occurred: {ex.Message}";
             response.IsSuccess = false;
         }
+
         return response;
     }
+
+
     public async Task<bool> CheckIfExists(string data)
     {
         if (_isContractInitialized)

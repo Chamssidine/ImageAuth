@@ -1,15 +1,9 @@
-using System;
-using System.Threading.Tasks;
-using System.Collections.Generic;
+
 using System.Numerics;
-using Nethereum.Hex.HexTypes;
-using Nethereum.ABI.FunctionEncoding.Attributes;
-using Nethereum.Web3;
 using Nethereum.RPC.Eth.DTOs;
-using Nethereum.Contracts.CQS;
+
 using Nethereum.Contracts.ContractHandlers;
-using Nethereum.Contracts;
-using System.Threading;
+
 using ImageAuthApi.Contracts.HashStorage.ContractDefinition;
 
 namespace ImageAuthApi.Contracts.HashStorage
@@ -32,7 +26,7 @@ namespace ImageAuthApi.Contracts.HashStorage
             return new HashStorageService(web3, receipt.ContractAddress);
         }
 
-        protected Nethereum.Web3.IWeb3 Web3{ get; }
+        protected Nethereum.Web3.IWeb3 Web3 { get; }
 
         public ContractHandler ContractHandler { get; }
 
@@ -50,28 +44,28 @@ namespace ImageAuthApi.Contracts.HashStorage
 
         public Task<string> StoreRequestAsync(StoreFunction storeFunction)
         {
-             return ContractHandler.SendRequestAsync(storeFunction);
+            return ContractHandler.SendRequestAsync(storeFunction);
         }
 
         public Task<TransactionReceipt> StoreRequestAndWaitForReceiptAsync(StoreFunction storeFunction, CancellationTokenSource cancellationToken = null)
         {
-             return ContractHandler.SendRequestAndWaitForReceiptAsync(storeFunction, cancellationToken);
+            return ContractHandler.SendRequestAndWaitForReceiptAsync(storeFunction, cancellationToken);
         }
 
         public Task<string> StoreRequestAsync(string hash)
         {
             var storeFunction = new StoreFunction();
-                storeFunction.Hash = hash;
-            
-             return ContractHandler.SendRequestAsync(storeFunction);
+            storeFunction.Hash = hash;
+
+            return ContractHandler.SendRequestAsync(storeFunction);
         }
 
         public Task<TransactionReceipt> StoreRequestAndWaitForReceiptAsync(string hash, CancellationTokenSource cancellationToken = null)
         {
             var storeFunction = new StoreFunction();
-                storeFunction.Hash = hash;
-            
-             return ContractHandler.SendRequestAndWaitForReceiptAsync(storeFunction, cancellationToken);
+            storeFunction.Hash = hash;
+
+            return ContractHandler.SendRequestAndWaitForReceiptAsync(storeFunction, cancellationToken);
         }
 
         public Task<CheckIfHashExistsOutputDTO> CheckIfHashExistsQueryAsync(CheckIfHashExistsFunction checkIfHashExistsFunction, BlockParameter blockParameter = null)
@@ -82,8 +76,8 @@ namespace ImageAuthApi.Contracts.HashStorage
         public Task<CheckIfHashExistsOutputDTO> CheckIfHashExistsQueryAsync(string hash, BlockParameter blockParameter = null)
         {
             var checkIfHashExistsFunction = new CheckIfHashExistsFunction();
-                checkIfHashExistsFunction.Hash = hash;
-            
+            checkIfHashExistsFunction.Hash = hash;
+
             return ContractHandler.QueryDeserializingToObjectAsync<CheckIfHashExistsFunction, CheckIfHashExistsOutputDTO>(checkIfHashExistsFunction, blockParameter);
         }
 
@@ -92,12 +86,12 @@ namespace ImageAuthApi.Contracts.HashStorage
             return ContractHandler.QueryAsync<CompareFunction, bool>(compareFunction, blockParameter);
         }
 
-        
+
         public Task<bool> CompareQueryAsync(string hash, BlockParameter blockParameter = null)
         {
             var compareFunction = new CompareFunction();
-                compareFunction.Hash = hash;
-            
+            compareFunction.Hash = hash;
+
             return ContractHandler.QueryAsync<CompareFunction, bool>(compareFunction, blockParameter);
         }
 
@@ -109,8 +103,8 @@ namespace ImageAuthApi.Contracts.HashStorage
         public Task<GetHashAtIndexOutputDTO> GetHashAtIndexQueryAsync(BigInteger index, BlockParameter blockParameter = null)
         {
             var getHashAtIndexFunction = new GetHashAtIndexFunction();
-                getHashAtIndexFunction.Index = index;
-            
+            getHashAtIndexFunction.Index = index;
+
             return ContractHandler.QueryDeserializingToObjectAsync<GetHashAtIndexFunction, GetHashAtIndexOutputDTO>(getHashAtIndexFunction, blockParameter);
         }
 
@@ -129,12 +123,12 @@ namespace ImageAuthApi.Contracts.HashStorage
             return ContractHandler.QueryAsync<GetHashDataByIndexFunction, string>(getHashDataByIndexFunction, blockParameter);
         }
 
-        
+
         public Task<string> GetHashDataByIndexQueryAsync(BigInteger index, BlockParameter blockParameter = null)
         {
             var getHashDataByIndexFunction = new GetHashDataByIndexFunction();
-                getHashDataByIndexFunction.Index = index;
-            
+            getHashDataByIndexFunction.Index = index;
+
             return ContractHandler.QueryAsync<GetHashDataByIndexFunction, string>(getHashDataByIndexFunction, blockParameter);
         }
 
@@ -143,7 +137,7 @@ namespace ImageAuthApi.Contracts.HashStorage
             return ContractHandler.QueryAsync<GetHashStorageLengthFunction, BigInteger>(getHashStorageLengthFunction, blockParameter);
         }
 
-        
+
         public Task<BigInteger> GetHashStorageLengthQueryAsync(BlockParameter blockParameter = null)
         {
             return ContractHandler.QueryAsync<GetHashStorageLengthFunction, BigInteger>(null, blockParameter);
@@ -154,7 +148,7 @@ namespace ImageAuthApi.Contracts.HashStorage
             return ContractHandler.QueryAsync<GetImageDataLengthFunction, BigInteger>(getImageDataLengthFunction, blockParameter);
         }
 
-        
+
         public Task<BigInteger> GetImageDataLengthQueryAsync(BlockParameter blockParameter = null)
         {
             return ContractHandler.QueryAsync<GetImageDataLengthFunction, BigInteger>(null, blockParameter);
@@ -178,8 +172,8 @@ namespace ImageAuthApi.Contracts.HashStorage
         public Task<ImageDataListOutputDTO> ImageDataListQueryAsync(BigInteger returnValue1, BlockParameter blockParameter = null)
         {
             var imageDataListFunction = new ImageDataListFunction();
-                imageDataListFunction.ReturnValue1 = returnValue1;
-            
+            imageDataListFunction.ReturnValue1 = returnValue1;
+
             return ContractHandler.QueryDeserializingToObjectAsync<ImageDataListFunction, ImageDataListOutputDTO>(imageDataListFunction, blockParameter);
         }
     }

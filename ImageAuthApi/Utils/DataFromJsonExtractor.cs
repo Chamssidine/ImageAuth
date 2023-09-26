@@ -25,15 +25,15 @@ public class DataFromJsonExtractor
                 {
                     var httpParser = new HttpParser();
 
-                    foreach (var data in rootObjectsList.data)
-                    {
-                        data.Fenetre = await httpParser.GetImageUrlAsync(data.Fenetre);
-                        data.Porte = await httpParser.GetImageUrlAsync(data.Porte);
-                        data.Toiture = await httpParser.GetImageUrlAsync(data.Toiture);
-                        data.Maison = await httpParser.GetImageUrlAsync(data.Maison);
-                        data.Autrephoto = await httpParser.GetImageUrlAsync(data.Autrephoto);
-                        userDataList.Add(data);
-                    }
+                    //foreach (var data in rootObjectsList.data)
+                    //{
+                    //    data.Fenetre = await httpParser.GetImageUrlAsync(data.Fenetre);
+                    //    data.Porte = await httpParser.GetImageUrlAsync(data.Porte);
+                    //    data.Toiture = await httpParser.GetImageUrlAsync(data.Toiture);
+                    //    data.Maison = await httpParser.GetImageUrlAsync(data.Maison);
+                    //    data.Autrephoto = await httpParser.GetImageUrlAsync(data.Autrephoto);
+                    //    userDataList.Add(data);
+                    //}
                 }
             }
         }

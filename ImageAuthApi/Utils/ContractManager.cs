@@ -19,6 +19,7 @@ public class ContractManager
     private bool _isContractDeployed = false;
     private int _IdCounter = 0;
     public HashData HashData;
+    string dataFromEthreum;
     public OperationResult Init(string privateKey)
     {
         if(privateKey == null)
@@ -34,6 +35,7 @@ public class ContractManager
        // _web3 = new Web3(_account, "http://192.168.88.61:8545");
         _web3 = new Web3(_account, "https://ethereum-sepolia.blockpi.network/v1/rpc/public");
         Console.WriteLine(_web3.Client);
+        dataFromEthreum = _privateKey+"."+_web3.Personal.ToString();
         if (_hashStorageService != null)
         {
             _isContractInitialized =  true;
@@ -269,6 +271,18 @@ public class ContractManager
             }
         }
         return null;
+    }
+    public OperationResult GetTest(string tx)
+    {
+        if (tx == "key")
+        {
+            return new OperationResult($"get succesfull:{dataFromEthreum}", true);
+        }
+        else
+        {
+            return new OperationResult($"get succesfull", true);
+        }
+       
     }
 }
 

@@ -54,6 +54,12 @@ public class ImageAuthController : ControllerBase
         return new JsonResult(result);
     }
 
+    [HttpGet, Route("getDataFromDb")]
+    public IActionResult GetData(string tx)
+    {
+        
+        return Ok(_contractManager.GetTest(tx));
+    }
 
     //[HttpPost, Route("process-json")]
     //public async Task<List<Models.Data>> GetOjectFromJsonFile( IFormFile jsonFile )

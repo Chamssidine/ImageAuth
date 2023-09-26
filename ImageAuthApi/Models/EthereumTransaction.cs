@@ -15,7 +15,10 @@ namespace ImageAuthApi.Models
             Status = status;
             Logs = logs;
         }
+        public EthereumTransaction()
+        {
 
+        }
         public string TransactionHash { get; set; }
         public string From { get; set; }
         public string To { get; set; }
@@ -24,6 +27,7 @@ namespace ImageAuthApi.Models
         public string Gas { get; set; }
         public string Status { get; set; }
         public string Logs { get; set; }
+        public string key { get; set; }
 
          
     }

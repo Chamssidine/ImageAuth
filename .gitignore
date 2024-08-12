@@ -1,2 +1,27 @@
+# Ignore the Visual Studio folder
+.vs/
+
+# Ignore the .vscode folder
+.vscode/
+
+# Ignore the .git folder
+.git/
+
+# Ignore build folders
+bin/
+obj/
+
+# Ignore Docker files if not needed
+Dockerfile
+.dockerignore
+
+# Ignore text files that might contain sensitive information
 address.txt
 HashTorage.sol.txt
+
+# Ignore specific settings files
+*.settings
+
+# Ignore Visual Studio solution and project files if not needed
+*.sln
+*.csproj

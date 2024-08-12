@@ -1,6 +1,8 @@
 ﻿using ImageAuthApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using NuGet.Protocol;
 
 namespace ImageAuthApi.Utils
 {
@@ -95,6 +97,69 @@ namespace ImageAuthApi.Utils
         public string GetJsonHash()
         {
             return _jsonHash;
+        }
+
+        /* update */
+
+        public async Task<List<FilteredData>> Deserialize( IFormFile jsonFile )
+        {
+            try
+            {
+                var reader = new StreamReader(jsonFile.OpenReadStream());
+
+                var json = await reader.ReadToEndAsync();
+
+                FixedAuditData fixedData = JsonConvert.DeserializeObject<FixedAuditData>(json);
+                var filteredJson = fixedData.ToJson();
+                var jObject = JObject.Parse(filteredJson);
+                List<FilteredData> filteredDataList = new List<FilteredData>();
+                string id = fixedData.TransactId;
+                foreach (var property in jObject.Properties())
+                {
+                    filteredDataList.Add(new FilteredData()
+                    {
+                        TransactId = id,
+                        PropertyName = property.Name,
+                        PropertyValue = (string)property.Value
+                    });
+                    ;
+                }
+
+                return filteredDataList;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public async Task<List<DataID>> DeserializeDataIdAsync( JsonResult jsonResult )
+        {
+            try
+            {
+                string jsonContent = JsonConvert.SerializeObject(jsonResult.Value);
+                List<DataID> liste = JsonConvert.DeserializeObject<List<DataID>>(jsonContent);
+                return liste;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+
+        public Object Deserialize<T>( JsonResult json )
+        {
+            try
+            {
+                var result = JsonConvert.DeserializeObject<T>(json.ToJson());
+                Console.WriteLine(result);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return new OperationResult($"error {ex.Message}", false);
+            }
         }
     }
 

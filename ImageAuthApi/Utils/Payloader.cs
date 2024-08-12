@@ -42,5 +42,18 @@ namespace ImageAuthApi.Utils
                 return new List<OperationResult>(null);
             }
         }
+        public async Task<OperationResult> SendPayload( string hashList, ContractManager _contractManager )
+        {
+            if (hashList != null)
+            {
+                var response = await _contractManager.SendData(hashList);
+                Console.WriteLine("response:"+response.Message);
+                return response;
+            }
+            else
+            {
+                return new("error: hash file is empty", false);
+            }
+        }
     }
 }

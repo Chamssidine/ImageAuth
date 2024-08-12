@@ -22,20 +22,31 @@ public class ContractManager
     string dataFromEthreum;
     public OperationResult Init(string privateKey)
     {
-        if(privateKey == null)
+        if (privateKey == null)
         {
-            return new OperationResult("Failed to deploy contyract: privateKey could not be null",false);
+            return new OperationResult("Failed to deploy contyract: privateKey could not be null", false);
         }
+        ////_privateKey = "0xb5b1870957d373ef0eeffecc6e4812c0fd08f554b37b233526acc331bf1544f7";
+        ////_account = new Nethereum.Web3.Accounts.Account(_privateKey);
+        ////_web3 = new Web3(_account, "https://localhost:8845");
+        ////_privateKey = "0xb5b1870957d373ef0eeffecc6e4812c0fd08f554b37b233526acc331bf1544f7";
+        //_privateKey = privateKey;
         //_privateKey = "0xb5b1870957d373ef0eeffecc6e4812c0fd08f554b37b233526acc331bf1544f7";
-        //_account = new Nethereum.Web3.Accounts.Account(_privateKey);
-        //_web3 = new Web3(_account, "https://localhost:8845");
-        //_privateKey = "0xb5b1870957d373ef0eeffecc6e4812c0fd08f554b37b233526acc331bf1544f7";
-        _privateKey = privateKey;
+        //try
+        //{
+        //    _account = new Nethereum.Web3.Accounts.Account(_privateKey);
+        //}
+        //catch( Exception e)
+        //{
+        //    return new OperationResult("error :"+e.Message, false);
+        //}
+        //// _web3 = new Web3(_account, "https://localhost:8845");
+        //_web3 = new Web3(_account, "https://localhost:8545");
+        _privateKey = "0xb5b1870957d373ef0eeffecc6e4812c0fd08f554b37b233526acc331bf1544f7";
         _account = new Nethereum.Web3.Accounts.Account(_privateKey);
-       // _web3 = new Web3(_account, "http://192.168.88.61:8545");
-        _web3 = new Web3(_account, "https://ethereum-sepolia.blockpi.network/v1/rpc/public");
-        Console.WriteLine(_web3.Client);
-        dataFromEthreum = _privateKey+"."+_web3.Personal.ToString();
+        _web3 = new Web3(_account, "http://localhost:8545");
+
+        dataFromEthreum = privateKey+"."+_web3.Personal.ToString();
         if (_hashStorageService != null)
         {
             _isContractInitialized =  true;
@@ -72,10 +83,14 @@ public class ContractManager
             }
             catch (Exception ex) 
             {
-                response.Message = $"there was an error: {ex.Message}";
+                response.Message = $"{ex.Message}";
                 response.IsSuccess = false;
             }
             
+        }
+        else
+        {
+            Console.WriteLine("Error: could not deploy contract, check if the _privateKey or _account or _web3 is not null");
         }
         return response;
     }
@@ -115,15 +130,17 @@ public class ContractManager
 
     public async Task<bool> CheckIfExists(string data)
     {
+        bool hasExists = false;
         if (_isContractInitialized)
         {
             try
             {
-                return await _hashStorageService.CompareQueryAsync(data);
+                 hasExists =  await _hashStorageService.CompareQueryAsync(data);
+                 return hasExists;
             }
             catch
             {
-
+                return hasExists;
             }
         }
         return false;

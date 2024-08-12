@@ -3,6 +3,8 @@ using ImageAuthApi.Models;
 using ImageAuthApi.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Newtonsoft.Json;
+using NuGet.Protocol;
 
 namespace ImageAuthApi.Controllers;
 
@@ -39,8 +41,17 @@ public class HashDataController : ControllerBase
         using(var reader =  new StreamReader(privateKey.OpenReadStream()))
         {
             var key =  await reader.ReadToEndAsync();
-            var Message = await _contractManager.Deploy(key);
-            return new JsonResult(Message);
+            if (key != null)
+            {
+                Console.WriteLine(key);
+                var Message = await _contractManager.Deploy(key);
+                return new JsonResult(Message);
+            }
+            else
+            {
+
+            }
+            return new JsonResult("Error: private key is null ");
         }
     }
 
@@ -84,7 +95,7 @@ public class HashDataController : ControllerBase
             }
             else
             {
-                _operationResult.Message = "Images does not exists";
+                _operationResult.Message = "Hash does not exists";
                 _operationResult.IsSuccess = false;
             }
         }
@@ -139,7 +150,7 @@ public class HashDataController : ControllerBase
         return Ok(_operationResult);
     }
 
-    //GET
+  
     [HttpGet, Route("GetHashData")]
     public async Task<IActionResult> GetAllHashData()
     {
@@ -191,6 +202,95 @@ public class HashDataController : ControllerBase
             return BadRequest("error: no data found!");
         }
         return Ok(hashDataList);
+    }
+
+    /*update*/
+
+    [HttpGet, Route("SendDataToBlockChain")]
+    public async Task<IActionResult> Process( int lastRowID )
+    {
+     
+        JsonFileProcessor JsonDeserializer = new JsonFileProcessor();
+        List<JsonResult> list = new List<JsonResult>();
+        Task<List<DataID>> deserializedDataID = null;
+        JsonResult dataID = new("");
+        dataID = _dbManager.Get(_configuration, lastRowID);
+        deserializedDataID = JsonDeserializer.DeserializeDataIdAsync(dataID);
+        if (deserializedDataID.IsCompleted)
+        {
+            for (var i = 0 ; i < deserializedDataID.Result.Count ; i++)
+            {
+
+                var dataToSave = _dbManager.GetDataFromBase(_configuration, deserializedDataID.Result[i].Id);
+                var deserialsedDataTosave = (FilteredConfirmedDataList)JsonDeserializer.Deserialize<FilteredConfirmedDataList>(dataToSave);
+                JsonHasher jsonHasher = new JsonHasher();
+                var dataToSendHash = jsonHasher.HashThisJson(deserialsedDataTosave.ToJson());
+                if (dataToSendHash.IsSuccess)
+                {
+                    Payloader payloader = new Payloader();
+                    var hashFile = jsonHasher.JsonHash;
+                    if (!_contractManager.CheckIfExists(hashFile).Result)
+                    {
+                        var result = await payloader.SendPayload(hashFile, _contractManager);
+
+                        if (result.IsSuccess)
+                        {
+
+                            var writeResult = _dbManager.WriteToDB(_configuration, deserialsedDataTosave.Value[0], hashFile);
+
+                            if (writeResult.IsSuccess)
+                            {
+                                Console.WriteLine("success");
+                                _dbManager.RemoveFromBase(_configuration, deserialsedDataTosave.Value[0].PropertyName);
+
+                            }
+                            else
+                            {
+                                return new JsonResult($"writeResult:{writeResult.Message}");
+                            }
+                        }
+                        else
+                        {
+                            return BadRequest(result);
+                        }
+                    }
+                    else
+                    {
+                        _dbManager.RemoveFromBase(_configuration, deserialsedDataTosave.Value[0].PropertyName);
+                    }
+                  
+                }
+                list.Add(dataToSave);
+            }
+          
+            return Ok(list);
+        }
+        return new JsonResult(dataID);
+
+
+    }
+
+
+    [HttpPost, Route("LoadData")]
+    public async Task<IActionResult> Load( IFormFile jsonFile )
+    {
+        JsonFileProcessor JsonDeserializer = new JsonFileProcessor();   
+        var data = await JsonDeserializer.Deserialize(jsonFile);
+        if (_dbManager.LoadIntoTempDB(_configuration, data).IsSuccess)
+        {
+            return Ok("data loaded successfully!");
+        }
+        else
+        {
+            return BadRequest("Error while loading data");
+        }
+
+    }
+
+    [HttpGet, Route("Reset DB")]
+    public async Task<IActionResult> Reset()
+    {
+        return Ok(_dbManager.ResetDB(_configuration));
     }
 
 }
